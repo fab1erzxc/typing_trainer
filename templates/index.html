@@ -9,8 +9,19 @@
 </head>
 
 <body>
+    <div id="user-info">
+        {% if current_user.is_authenticated %}
+        <span>Logged in as: {{ current_user.username }}</span>
+        <a href="{{ url_for('logout') }}" class="logout-button">Logout</a> <!----  Убрали span  ---->
+        {% else %}
+        <span><a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('register') }}">Register</a></span>
+        {% endif %}
+        <button id="theme-toggle">Toggle Theme</button> <!----  Кнопка смены темы  ---->
+    </div>
+
+
     <h1>Typing Trainer</h1>
-    <button id="theme-toggle">Toggle Theme</button> <!-- Кнопка смены темы -->
+
     <div id="controls">
         <label for="mode">Mode:</label>
         <select id="mode">

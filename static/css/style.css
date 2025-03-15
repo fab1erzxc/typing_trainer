@@ -21,7 +21,7 @@
     --text-to-type-bg: #333;
     --border-color: #555;
     --accent-color: #64B5F6;
-    /* Синий (более подходящий для темной темы) */
+    /* Синий */
     --correct-color: lightgreen;
     --incorrect-color: #ff6961;
     --current-key-bg: #444;
@@ -40,11 +40,8 @@ body {
     min-height: 100vh;
     margin: 0;
     background-color: var(--bg-color);
-    /* Фон */
     color: var(--text-color);
-    /* Цвет текста */
     transition: background-color 0.3s, color 0.3s;
-    /* Плавный переход для смены темы */
 }
 
 h1 {
@@ -71,9 +68,7 @@ h1 {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     background-color: var(--text-to-type-bg);
-    /* Фон */
     color: var(--text-color);
-    /* Цвет текста */
 }
 
 /* --- Стили для области текста для печати --- */
@@ -102,7 +97,6 @@ h1 {
 
 #text-to-type span.current {
     background-color: yellow;
-    /* Фон для текущего символа */
 }
 
 /* --- Стили для поля ввода --- */
@@ -120,14 +114,11 @@ h1 {
     background-color: var(--text-to-type-bg);
     color: var(--text-color);
     outline: none;
-    /* Убираем стандартную обводку при фокусе */
 }
 
 #user-input:focus {
     border-color: var(--accent-color);
-    /* Обводка при фокусе */
     box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-    /* Тень при фокусе (под цвет акцента) */
 }
 
 /* --- Стили для блока статистики --- */
@@ -227,22 +218,123 @@ h1 {
     font-size: 12px;
 }
 
-/* --- Стили для кнопки переключения темы --- */
-#theme-toggle {
+
+/* --- Стили для кнопки переключения темы и информации о пользователе --- */
+#user-info {
     position: fixed;
     top: 10px;
     right: 10px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    /* Элементы вертикально */
+    align-items: flex-end;
+    /* Выравнивание по правому краю */
+    gap: 5px;
+    /* Промежуток между элементами */
+}
+
+
+#theme-toggle {
     padding: 8px 12px;
     background-color: var(--accent-color);
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    z-index: 1000;
-    /* Чтобы кнопка была поверх всего контента */
+    width: 100px;
+    box-sizing: border-box;
 }
 
-#theme-toggle:hover {
-    /* Добавляем эффект при наведении */
+.logout-button {
+    padding: 8px 12px;
+    background-color: var(--incorrect-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9em;
+    width: 100px;
+    box-sizing: border-box;
+    display: inline-block;
+    text-align: center;
+}
+
+
+/* Стили для форм (login и register) */
+.form-container {
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--text-to-type-bg);
+}
+
+.form-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-container input[type="text"],
+.form-container input[type="password"],
+.form-container input[type="email"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-sizing: border-box;
+    /*  Чтобы padding не увеличивал ширину */
+}
+
+.form-container input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-container input[type="submit"]:hover {
+    opacity: 0.8;
+    /*  Затемнение при наведении */
+}
+
+/* Стили для флеш сообщений */
+.flash-messages {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 15px;
+
+}
+
+.flash-messages li {
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+.flash-messages .success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.flash-messages .error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+#theme-toggle:hover,
+.logout-button:hover {
     opacity: 0.8;
 }
