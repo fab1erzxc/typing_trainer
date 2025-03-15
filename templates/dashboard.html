@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!--  Подключаем Chart.js  -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <h1>Dashboard</h1>
+    <p>Welcome, {{ current_user.username }}!</p>
+
+    <div class="chart-container">
+        <canvas id="speedChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="accuracyChart"></canvas>
+    </div>
+
+    <a href="{{ url_for('index') }}">Back to Typing Trainer</a>
+
+    <script>
+        // Данные, полученные из Flask (переданы в шаблон)
+        const labels = {{ labels | tojson }};
+        const speeds = {{ speeds | tojson }};
+        const accuracies = {{ accuracies | tojson }};
+
+        // --- График скорости ---
+        const speedCtx = document.getElementById('speedChart').getContext('2d');
+        const speedChart = new Chart(speedCtx, {
+            type: 'line',  // Тип графика (линейный)
+            data: {
+                labels: labels, // Метки по оси X (даты)
+                datasets: [{
+                    label: 'Speed (WPM)',  // Название графика
+                    data: speeds,          // Данные (скорость)
+                    borderColor: 'rgba(75, 192, 192, 1)',  // Цвет линии
+                    borderWidth: 2,
+                    fill: false  // Не закрашивать область под графиком
+                }]
+            },
+            options: {
+                scales: {
+                    y: { //настройки для оси Y
+                        beginAtZero: true  // Начинать с нуля
+                    }
+                }
+            }
+        });
+
+        // --- График точности ---
+        const accuracyCtx = document.getElementById('accuracyChart').getContext('2d');
+        const accuracyChart = new Chart(accuracyCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Accuracy (%)',
+                    data: accuracies,
+                    borderColor: 'rgba(255, 99, 132, 1)',  // Другой цвет
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100  // Точность не может быть больше 100%
+                    }
+                }
+            }
+        });
+
+    </script>
+    <style>
+        /* Добавляем стили для контейнера */
+        .chart-container {
+            width: 80%;
+            /* Ширина */
+            max-width: 800px;
+            /* Максимальная ширина */
+            margin: 20px auto;
+            /* Центрируем по горизонтали и добавляем отступы сверху/снизу */
+        }
+    </style>
+</body>
+
+</html>

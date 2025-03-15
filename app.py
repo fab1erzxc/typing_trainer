@@ -5,6 +5,7 @@ import random
 import re
 import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
+import datetime  # Добавляем модуль datetime
 
 app = Flask(__name__)
 # !!! ОБЯЗАТЕЛЬНО ЗАМЕНИТЕ !!!
@@ -24,21 +25,18 @@ else:  # Локальная разработка
     DB_HOST = "localhost"
     DB_NAME = "typing_trainer_db"
     DB_USER = "typing_trainer_user"  # !!! Имя нового пользователя !!!
-    DB_PASS = "bakuman56pen56"  # !!! Пароль нового пользователя !!!
+    DB_PASS = "bakuman56pen56"  # !!!  Пароль !!!
     DB_PORT = 25432
 
-
-def get_db_connection():
-    conn_string = f"host={DB_HOST} database={DB_NAME} user={DB_USER} password={DB_PASS} port={DB_PORT}"
-    print(f"Connection string: {conn_string}")  # !!! ДОБАВЬТЕ ЭТО !!!
-    conn = psycopg2.connect(
-        host=DB_HOST,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASS,
-        port=DB_PORT
-    )
-    return conn
+    def get_db_connection():
+        conn = psycopg2.connect(
+            host=DB_HOST,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASS,
+            port=DB_PORT
+        )
+        return conn
 
 # --- Модель пользователя (UserMixin) ---
 
@@ -115,8 +113,8 @@ def generate_sentence(num_words, difficulty='easy'):
 
 
 def generate_paragraph(num_sentences, num_words_per_sentence, difficulty):
-    sentences = [generate_sentence(num_words_per_sentence, difficulty)
-                 for _ in range(num_sentences)]
+    sentences = [generate_sentence(
+        num_words_per_sentence, difficulty) for _ in range(num_sentences)]
     return ' '.join(sentences)
 
 
@@ -130,10 +128,11 @@ def generate_text(mode='words', difficulty='easy', length=100, num_words=20, num
     elif mode == 'paragraph':
         return generate_paragraph(num_sentences, num_words_per_sentence, difficulty)
     else:
+        # По умолчанию - слова
         return generate_random_words(num_words, difficulty)
 
-
 # --- Маршруты (Routes) ---
+
 
 @app.route('/api/text')
 def get_text():
@@ -149,7 +148,7 @@ def get_text():
 
 
 @app.route('/')
-@login_required  # Главная страница доступна только авторизованным
+@login_required
 def index():
     return render_template('index.html')
 
@@ -173,12 +172,13 @@ def login():
                     login_user(user)
                     return redirect(url_for('index'))
                 else:
-                    flash('Incorrect password', 'error')
+                    flash('Incorrect password', 'error')  # добавляем флеш
             else:
-                flash('Incorrect username', 'error')
+                flash('Incorrect username', 'error')  # если пользователя нет
         except Exception as e:
             print(f"Error during login: {e}")
-            flash('An error occurred', 'error')
+            flash('An error occurred', 'error')  # Добавляем флеш
+
         finally:
             cur.close()
             conn.close()
@@ -208,7 +208,7 @@ def register():
             existing_user = cur.fetchone()
 
             if existing_user:
-                flash('Username already exists', 'error')
+                flash('Username already exists', 'error')  # добавляем флеш
                 return redirect(url_for('register'))
 
             hashed_password = generate_password_hash(password)
@@ -218,12 +218,14 @@ def register():
                 (username, hashed_password, email)
             )
             conn.commit()
-            flash('Registration successful! Please log in.', 'success')
+            flash('Registration successful! Please log in.',
+                  'success')  # добавляем флеш
             return redirect(url_for('login'))
 
         except Exception as e:
             print(f"Error during registration: {e}")
-            flash('An error occurred during registration', 'error')
+            flash('An error occurred during registration',
+                  'error')  # добавляем флеш
             conn.rollback()  # откатываем изменения
         finally:
             cur.close()
@@ -233,7 +235,7 @@ def register():
 
 
 @app.route('/api/stats', methods=['POST'])
-@login_required  # Доступно только авторизованным пользователям
+@login_required
 def stats():
     data = request.get_json()
     speed = data.get('speed', 0)
@@ -243,7 +245,7 @@ def stats():
     length = data.get('length', 0)
 
     print(
-        f"Received stats: Speed={speed}, Accuracy={accuracy}, Mode={mode}, Difficulty={difficulty}, Length={length}")
+        f"Received stats: Speed={speed}, Accuracy={accuracy}, Mode={mode}, Difficulty={difficulty}, Length: {length}")
 
     conn = get_db_connection()
     cur = conn.cursor()
@@ -264,6 +266,50 @@ def stats():
 
     return jsonify({'status': 'success'})
 
+# --- Новый маршрут для дэшборда ---
+
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        # Получаем все результаты для текущего пользователя
+        cur.execute(
+            "SELECT speed, accuracy, mode, difficulty, created_at FROM results WHERE user_id = %s ORDER BY created_at", (current_user.id,))
+        results = cur.fetchall()
+
+        # Преобразуем данные для Chart.js
+        #   labels:  Список дат (или дат и времени)
+        #   speeds: Список значений скорости
+        #   accuracies: Список значений точности
+
+        labels = []
+        speeds = []
+        accuracies = []
+
+        for row in results:
+            #  row[4] - это created_at (TIMESTAMP WITH TIME ZONE)
+            #  Преобразуем его в строку в нужном формате (например, "YYYY-MM-DD HH:MM:SS")
+            # Или другой формат
+            labels.append(row[4].strftime("%Y-%m-%d %H:%M:%S"))
+            speeds.append(row[0])  # speed
+            accuracies.append(row[1])  # accuracy
+
+        # Передаем данные в шаблон
+        return render_template('dashboard.html', labels=labels, speeds=speeds, accuracies=accuracies)
+
+    except Exception as e:
+        print(f"Error fetching stats: {e}")
+        flash('Error fetching stats', 'error')
+        # Перенаправляем на главную в случае ошибки
+        return redirect(url_for('index'))
+
+    finally:
+        cur.close()
+        conn.close()
+
 
 if __name__ == '__main__':
-    app.run(debug=True)  # !!! debug=True ТОЛЬКО для разработки !!!
+    app.run(debug=True)

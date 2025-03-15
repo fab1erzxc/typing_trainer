@@ -9,16 +9,16 @@
 </head>
 
 <body>
-    <div id="user-info">
+    <div class="top-buttons">
         {% if current_user.is_authenticated %}
         <span>Logged in as: {{ current_user.username }}</span>
-        <a href="{{ url_for('logout') }}" class="logout-button">Logout</a> <!----  Убрали span  ---->
+        <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+        <a href="{{ url_for('dashboard') }}" class="dashboard-button">Statistics</a>
         {% else %}
         <span><a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('register') }}">Register</a></span>
         {% endif %}
-        <button id="theme-toggle">Toggle Theme</button> <!----  Кнопка смены темы  ---->
+        <button id="theme-toggle">Toggle Theme</button>
     </div>
-
 
     <h1>Typing Trainer</h1>
 

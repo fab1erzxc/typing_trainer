@@ -12,6 +12,8 @@
     --key-bg-color: #fff;
     --key-pressed-bg: #ddd;
     --key-text-color: #333;
+    --button-width: 100px;
+    /*  Одинаковая ширина для кнопок */
 }
 
 /* --- Переменные для тёмной темы --- */
@@ -219,47 +221,77 @@ h1 {
 }
 
 
-/* --- Стили для кнопки переключения темы и информации о пользователе --- */
-#user-info {
+/* --- Стили для верхней панели (кнопки и информация о пользователе) --- */
+.top-buttons {
     position: fixed;
     top: 10px;
     right: 10px;
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    /* Элементы вертикально */
+    /*  Элементы друг под другом  */
     align-items: flex-end;
-    /* Выравнивание по правому краю */
+    /*  Выравнивание по правому краю  */
     gap: 5px;
-    /* Промежуток между элементами */
+    /*  Промежуток между элементами  */
 }
 
-
 #theme-toggle {
-    padding: 8px 12px;
     background-color: var(--accent-color);
+    /*  Синий цвет  */
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    width: 100px;
+    width: var(--button-width);
+    /*  Фиксированная ширина  */
+    padding: 8px 0px;
+    /*  Уменьшаем вертикальные отступы */
     box-sizing: border-box;
+    text-align: center;
 }
 
 .logout-button {
-    padding: 8px 12px;
     background-color: var(--incorrect-color);
+    /* Красный цвет */
     color: white;
     border: none;
     border-radius: 4px;
     text-decoration: none;
     font-size: 0.9em;
-    width: 100px;
+    width: var(--button-width);
+    /* Фиксированная ширина */
+    padding: 8px 0px;
+    /*  Уменьшаем вертикальные отступы */
     box-sizing: border-box;
     display: inline-block;
+    /*  Чтобы ширина работала  */
     text-align: center;
 }
 
+.dashboard-button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9em;
+    width: var(--button-width);
+    /* Фиксированная ширина */
+    padding: 8px 0px;
+    /*  Уменьшаем вертикальные отступы */
+    box-sizing: border-box;
+    display: inline-block;
+    /*  Чтобы ширина работала  */
+    text-align: center;
+}
+
+#theme-toggle:hover,
+.logout-button:hover,
+.dashboard-button:hover {
+    opacity: 0.8;
+    /*  Затемнение при наведении  */
+}
 
 /* Стили для форм (login и register) */
 .form-container {
@@ -334,7 +366,9 @@ h1 {
     color: #721c24;
 }
 
-#theme-toggle:hover,
-.logout-button:hover {
-    opacity: 0.8;
+/* Дополнительные стили для страницы статистики (dashboard) */
+.chart-container {
+    width: 80%;
+    max-width: 800px;
+    margin: 20px auto;
 }
