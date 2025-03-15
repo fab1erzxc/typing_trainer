@@ -1,3 +1,36 @@
+/* --- Переменные для светлой темы (по умолчанию) --- */
+:root {
+    --bg-color: #f0f0f0;
+    --text-color: #333;
+    --text-to-type-bg: #fff;
+    --border-color: #ddd;
+    --accent-color: #4CAF50;
+    /* Зеленый */
+    --correct-color: green;
+    --incorrect-color: red;
+    --current-key-bg: #add8e6;
+    --key-bg-color: #fff;
+    --key-pressed-bg: #ddd;
+    --key-text-color: #333;
+}
+
+/* --- Переменные для тёмной темы --- */
+.dark-mode {
+    --bg-color: #222;
+    --text-color: #eee;
+    --text-to-type-bg: #333;
+    --border-color: #555;
+    --accent-color: #64B5F6;
+    /* Синий (более подходящий для темной темы) */
+    --correct-color: lightgreen;
+    --incorrect-color: #ff6961;
+    --current-key-bg: #444;
+    --key-bg-color: #444;
+    --key-pressed-bg: #555;
+    --key-text-color: #eee;
+}
+
+/* --- Общие стили --- */
 body {
     font-family: sans-serif;
     display: flex;
@@ -6,45 +39,98 @@ body {
     justify-content: center;
     min-height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
+    background-color: var(--bg-color);
+    /* Фон */
+    color: var(--text-color);
+    /* Цвет текста */
+    transition: background-color 0.3s, color 0.3s;
+    /* Плавный переход для смены темы */
 }
 
 h1 {
-    color: #333;
+    color: var(--text-color);
 }
 
+/* --- Стили для элементов управления --- */
+#controls {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+#controls label {
+    margin-right: 5px;
+}
+
+#controls select,
+#controls input[type="range"] {
+    padding: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--text-to-type-bg);
+    /* Фон */
+    color: var(--text-color);
+    /* Цвет текста */
+}
+
+/* --- Стили для области текста для печати --- */
 #text-to-type {
-    border: 2px solid #ddd;
+    border: 2px solid var(--border-color);
     padding: 20px;
     margin-bottom: 20px;
-    background-color: #fff;
+    background-color: var(--text-to-type-bg);
     border-radius: 5px;
     font-size: 1.2em;
     line-height: 1.5;
     white-space: pre-wrap;
-    /* Важно для переноса строк */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-width: 800px;
-    /* Ограничение ширины */
     text-align: center;
 }
 
+/* --- Стили для подсветки текста в #text-to-type --- */
+#text-to-type span.correct {
+    color: var(--correct-color);
+}
+
+#text-to-type span.incorrect {
+    color: var(--incorrect-color);
+}
+
+#text-to-type span.current {
+    background-color: yellow;
+    /* Фон для текущего символа */
+}
+
+/* --- Стили для поля ввода --- */
 #user-input {
     width: 80%;
-    /* Ширина на 80% от родительского контейнера */
     max-width: 800px;
-    /* Максимальная ширина */
     height: 150px;
     padding: 15px;
-    border: 2px solid #ddd;
+    border: 2px solid var(--border-color);
     margin-bottom: 20px;
     font-size: 1.2em;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     resize: vertical;
-    /* Разрешить вертикальное изменение размера */
+    background-color: var(--text-to-type-bg);
+    color: var(--text-color);
+    outline: none;
+    /* Убираем стандартную обводку при фокусе */
 }
 
+#user-input:focus {
+    border-color: var(--accent-color);
+    /* Обводка при фокусе */
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    /* Тень при фокусе (под цвет акцента) */
+}
+
+/* --- Стили для блока статистики --- */
 #stats {
     display: flex;
     justify-content: space-around;
@@ -57,7 +143,7 @@ h1 {
 #stats p {
     margin: 0 10px;
     padding: 10px;
-    background-color: #fff;
+    background-color: var(--text-to-type-bg);
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -65,12 +151,10 @@ h1 {
 #speed,
 #accuracy {
     font-weight: bold;
-    color: #4CAF50;
-    /* Зеленый цвет для скорости и точности */
+    color: var(--accent-color);
 }
 
-/* ... (предыдущие стили) ... */
-
+/* --- Стили для виртуальной клавиатуры --- */
 #keyboard {
     margin-top: 20px;
     display: flex;
@@ -85,51 +169,32 @@ h1 {
 .key {
     width: 40px;
     height: 40px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color);
     margin: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     user-select: none;
-    /* Запрещаем выделение текста */
-    background-color: #fff;
+    background-color: var(--key-bg-color);
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: var(--key-text-color);
+    transition: background-color 0.2s, box-shadow 0.2s;
 }
 
 .key.pressed {
-    background-color: #ddd;
-    /* Цвет при нажатии (keydown) */
+    background-color: var(--key-pressed-bg);
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
-    /* Внутренняя тень */
 }
 
 .key.current-key {
-    background-color: #add8e6;
-    /* Светло-голубой цвет для текущей клавиши */
-
+    background-color: var(--current-key-bg);
 }
 
-/* Стили для подсветки текста*/
-
-#text-to-type span.correct {
-    color: green;
-}
-
-#text-to-type span.incorrect {
-    color: red;
-}
-
-#text-to-type span.current {
-    background-color: yellow;
-    /* Подсветка текущего символа */
-}
-
+/* Стили для специальных клавиш */
 .key[data-key="space"] {
-    /* data-key=" " не работает, поэтому используем [data-key="space"] */
     width: 200px;
-    /* Ширина пробела */
 }
 
 .key[data-key="enter"] {
@@ -162,28 +227,22 @@ h1 {
     font-size: 12px;
 }
 
-/* ... (предыдущие стили) ... */
-
-#controls {
-    margin-bottom: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    /* Разрешаем перенос на новую строку */
-    justify-content: center;
-    /* Центрируем элементы */
-    align-items: center;
-    /* Выравниваем по центру по вертикали */
-    gap: 10px;
-    /* Добавляем промежутки между элементами */
-}
-
-#controls label {
-    margin-right: 5px;
-}
-
-#controls select,
-#controls input[type="range"] {
-    padding: 5px;
-    border: 1px solid #ccc;
+/* --- Стили для кнопки переключения темы --- */
+#theme-toggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 8px 12px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
     border-radius: 4px;
+    cursor: pointer;
+    z-index: 1000;
+    /* Чтобы кнопка была поверх всего контента */
+}
+
+#theme-toggle:hover {
+    /* Добавляем эффект при наведении */
+    opacity: 0.8;
 }

@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const numWordsPerSentenceSlider = document.getElementById('num-words-sentence');
     const numWordsPerSentenceValue = document.getElementById('num-words-sentence-value');
     const newTextButton = document.getElementById('new-text');
+    const themeToggleButton = document.getElementById('theme-toggle'); // Кнопка смены темы
 
     let textToType = '';
     let startTime = null;
@@ -212,26 +213,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    // --- Новая функция для управления видимостью элементов управления ---
+
     function updateControlVisibility() {
         const selectedMode = modeSelect.value;
-        // Сначала скрываем все группы
         document.querySelectorAll('.control-group').forEach(group => {
             group.style.display = 'none';
         });
 
-        // Затем показываем нужные, в зависимости от режима
         document.querySelectorAll(`.${selectedMode}`).forEach(group => {
             group.style.display = 'block'; // Или 'flex', если вы используете flexbox
         })
 
     }
 
-    // --- Обработчики событий ---
 
     modeSelect.addEventListener('change', () => {
-        updateControlVisibility(); // Обновляем видимость
-        loadText(); // Загружаем новый текст
+        updateControlVisibility();
+        loadText();
     });
 
     difficultySelect.addEventListener('change', loadText);
@@ -254,9 +252,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     newTextButton.addEventListener('click', loadText);
 
-    // --- Инициализация ---
+    // --- Переключение темы ---
 
-    updateControlVisibility(); //  Начальная настройка видимости
+    // Проверяем, есть ли сохраненная тема в localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.body.classList.add(savedTheme); // Применяем сохраненную тему
+    }
+
+    themeToggleButton.addEventListener('click', () => {
+        // Переключаем класс dark-mode у body
+        document.body.classList.toggle('dark-mode');
+
+        // Сохраняем текущую тему в localStorage
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark-mode');
+        } else {
+            localStorage.setItem('theme', ''); // Если светлая тема, сохраняем пустую строку
+        }
+    });
+
+    updateControlVisibility();
     loadText();
     userInput.focus();
 });
