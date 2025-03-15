@@ -1,0 +1,70 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    color: #333;
+}
+
+#text-to-type {
+    border: 2px solid #ddd;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    font-size: 1.2em;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    /* Важно для переноса строк */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    /* Ограничение ширины */
+    text-align: center;
+}
+
+#user-input {
+    width: 80%;
+    /* Ширина на 80% от родительского контейнера */
+    max-width: 800px;
+    /* Максимальная ширина */
+    height: 150px;
+    padding: 15px;
+    border: 2px solid #ddd;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    resize: vertical;
+    /* Разрешить вертикальное изменение размера */
+}
+
+#stats {
+    display: flex;
+    justify-content: space-around;
+    width: 80%;
+    max-width: 800px;
+    margin-bottom: 20px;
+    font-size: 1.1em;
+}
+
+#stats p {
+    margin: 0 10px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#speed,
+#accuracy {
+    font-weight: bold;
+    color: #4CAF50;
+    /* Зеленый цвет для скорости и точности */
+}

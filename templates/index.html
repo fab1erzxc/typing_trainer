@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Trainer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <h1>Typing Trainer</h1>
+
+    <div id="text-to-type">
+        <p>Type this text here...</p> <!-Текст для печати-->
+    </div>
+
+    <textarea id="user-input" placeholder="Start typing..."></textarea>
+
+    <div id="stats">
+        <p>Speed: <span id="speed">0</span> WPM</p>
+        <p>Accuracy: <span id="accuracy">100</span>%</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Функция для отправки статистики на сервер (заглушка)
+        function sendStats(speed, accuracy) {
+            fetch('/api/stats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ speed: speed, accuracy: accuracy }),
+            })
+                .then(response => response.json())
+                .then(data => console.log('Server response:', data))
+                .catch(error => console.error('Error:', error)); // Добавлена обработка ошибок
+        }
+
+        // Пример вызова функции отправки статистики (замените на реальный код)
+        // sendStats(30, 95); // Раскомментируйте и замените значения, когда будете готовы
+
+        // Добавляем обработчики событий (заглушка)
+        const userInput = document.getElementById('user-input');
+        const textToType = document.getElementById('text-to-type').innerText; //берем текст
+
+        userInput.addEventListener('input', () => {
+            // Здесь будет логика обработки ввода, подсчета скорости и точности
+            // ...
+
+            const currentInput = userInput.value;
+
+            //пример логики
+            if (currentInput === textToType.substring(0, currentInput.length)) {
+                userInput.style.color = 'green'
+            } else {
+                userInput.style.color = 'red'
+            }
+
+            // Пример обновления статистики (замените на реальный код)
+            const speed = currentInput.length * 5 // Пример расчета скорости (слов в минуту)
+            const accuracy = 98; // Пример расчета точности
+
+            document.getElementById('speed').textContent = speed;
+            document.getElementById('accuracy').textContent = accuracy;
+
+            // отправляем реальные данные
+            // sendStats(speed, accuracy)
+        });
+
+        // Дополнительный код JavaScript (обработка клавиатуры, таймер, и т.д.)
+        // ...
+
+    </script>
+</body>
+
+</html>
