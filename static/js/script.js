@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const numWordsPerSentenceSlider = document.getElementById('num-words-sentence');
     const numWordsPerSentenceValue = document.getElementById('num-words-sentence-value');
     const newTextButton = document.getElementById('new-text');
-    const themeToggleButton = document.getElementById('theme-toggle'); // Кнопка смены темы
+    const themeToggleButton = document.getElementById('theme-toggle');
 
     let textToType = '';
     let startTime = null;
@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let incorrectChars = 0;
 
 
+    // --- Загрузка текста ---
     function loadText() {
         const mode = modeSelect.value;
         const difficulty = difficultySelect.value;
@@ -47,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 textToType = data.text;
                 displayTestText(textToType);
                 createKeyboard();
-                resetTyping();
+                resetTyping(); // Сбрасываем состояние
             })
             .catch(error => {
                 console.error('Error fetching text:', error);
@@ -55,60 +56,80 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    function resetTyping() {
-        startTime = null;
-        currentCharIndex = 0;
-        correctChars = 0;
-        incorrectChars = 0;
-        userInput.value = '';
-        displayTestText(textToType);
-        updateKeyboard()
-        userInput.focus();
-    }
-
     function displayTestText(text) {
-        textToTypeDiv.innerHTML = '';
+        textToTypeDiv.innerHTML = ''; // Очищаем предыдущий текст
         for (let i = 0; i < text.length; i++) {
             const charSpan = document.createElement('span');
             charSpan.textContent = text[i];
             textToTypeDiv.appendChild(charSpan);
         }
     }
+    // --- Сброс состояния ---
+    function resetTyping() {
+        startTime = null;
+        currentCharIndex = 0;
+        correctChars = 0;
+        incorrectChars = 0;
+        userInput.value = '';
+        const textSpans = textToTypeDiv.querySelectorAll('span'); //сбрасываем стили
+        textSpans.forEach(span => {
+            span.classList.remove('correct', 'incorrect', 'current');
+        });
+        updateKeyboard();
+        userInput.focus();
+    }
 
+    // --- Обработка ввода ---
     userInput.addEventListener('input', () => {
         if (!startTime) {
-            startTime = new Date();
+            startTime = new Date(); // Фиксируем время начала
         }
 
         const inputText = userInput.value;
-        const inputChars = inputText.split('');
+        const inputChars = inputText.split(''); // Массив введенных символов
 
         const textSpans = textToTypeDiv.querySelectorAll('span');
-        textSpans.forEach(span => {
+        textSpans.forEach(span => {  //сбрасываем стили
             span.classList.remove('correct', 'incorrect', 'current');
         });
 
         correctChars = 0;
         incorrectChars = 0;
 
-
+        // Сравниваем введенный текст с образцом *посимвольно*
         for (let i = 0; i < textToType.length; i++) {
-            if (i < inputChars.length) {
-                if (inputChars[i] === textToType[i]) {
-                    textSpans[i].classList.add('correct');
+            if (i < inputChars.length) { // Если символ введен
+                if (inputChars[i] === textToType[i]) { // Если символ введен правильно
+                    textSpans[i].classList.add('correct'); // Добавляем класс correct
                     correctChars++;
                 } else {
-                    textSpans[i].classList.add('incorrect');
+                    textSpans[i].classList.add('incorrect'); // Добавляем класс incorrect
                     incorrectChars++;
                 }
             }
-
-            if (i === inputText.length) {
+            if (i === inputText.length) { // Подсвечиваем текущий символ
                 textSpans[i].classList.add('current');
-                currentCharIndex = i;
+                currentCharIndex = i; //обновляем индекс
             }
         }
 
+        // --- Проверка на завершение сеанса (по длине) ---
+        if (inputText.length >= textToType.length) {
+            // Если длина введенного текста >= длине текста для печати
+            const endTime = new Date();
+            const elapsedTime = (endTime - startTime) / 1000 / 60; // Время в минутах
+            const typedWords = inputText.length / 5;
+            const speed = elapsedTime > 0 ? Math.round(typedWords / elapsedTime) : 0;
+            const accuracy = textToType.length > 0 ? Math.round(((textToType.length - incorrectChars) / textToType.length) * 100) : 100;
+            // Отправляем статистику
+            sendStats(speed, accuracy);
+            // Загружаем новый текст
+            loadText();
+            return; // !!! ВАЖНО !!! Выходим из обработчика
+        }
+
+
+        // Обновляем статистику (если сеанс не завершен)
         const elapsedTime = (new Date() - startTime) / 1000 / 60;
         const typedWords = inputText.length / 5;
         const speed = elapsedTime > 0 ? Math.round(typedWords / elapsedTime) : 0;
@@ -116,44 +137,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
         speedSpan.textContent = speed;
         accuracySpan.textContent = accuracy;
-
-        sendStats(speed, accuracy);
         updateKeyboard();
     });
-
-    userInput.addEventListener('keydown', (event) => {
-        const key = event.key;
-        const keyElement = document.querySelector(`.key[data-key="${key.toLowerCase()}"]`);
-        if (keyElement) {
-            keyElement.classList.add('pressed');
-        }
-        if (event.key === 'Backspace' && userInput.value.length < currentCharIndex) {
-            event.preventDefault();
+    // --- Функции ---
+    userInput.addEventListener('keydown', (event) => { //добавляем обработчик нажатия
+        const key = event.key; // Получаем нажатую клавишу
+        const keyElement = document.querySelector(`.key[data-key="${key.toLowerCase()}"]`); //ищем клавишу
+        if (keyElement) { //если клавиша найдена
+            keyElement.classList.add('pressed'); //добавляем класс
         }
     });
 
-    userInput.addEventListener('keyup', (event) => {
+    userInput.addEventListener('keyup', (event) => { //обработчик отпускания клавиш
         const key = event.key;
         const keyElement = document.querySelector(`.key[data-key="${key.toLowerCase()}"]`);
         if (keyElement) {
-            keyElement.classList.remove('pressed');
+            keyElement.classList.remove('pressed'); // Убираем класс при отпускании
         }
     });
-
 
     function sendStats(speed, accuracy) {
+        const mode = modeSelect.value;
+        const difficulty = difficultySelect.value;
+        const length = textToType.length;
         fetch('/api/stats', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ speed: speed, accuracy: accuracy }),
+            body: JSON.stringify({ speed: speed, accuracy: accuracy, mode: mode, difficulty: difficulty, length: length }),
         })
             .then(response => response.json())
             .then(data => console.log('Server response:', data))
             .catch(error => console.error('Error:', error));
     }
 
+    // --- Виртуальная клавиатура ---
     const keyLayout = [
         ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
         ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
@@ -163,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     function createKeyboard() {
-        keyboardDiv.innerHTML = '';
+        keyboardDiv.innerHTML = ''; // Очищаем клавиатуру
 
         for (const row of keyLayout) {
             const rowDiv = document.createElement('div');
@@ -172,13 +191,14 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const key of row) {
                 const keyDiv = document.createElement('div');
                 keyDiv.classList.add('key');
-                keyDiv.textContent = key === 'Space' ? ' ' : key;
-                keyDiv.dataset.key = key.toLowerCase();
+                keyDiv.textContent = key === 'Space' ? ' ' : key; // Вместо Space отображаем пробел
+                keyDiv.dataset.key = key.toLowerCase(); // data-атрибут для связи с event.key
                 rowDiv.appendChild(keyDiv);
 
+                // Добавляем обработчик клика (для эмуляции нажатия)
                 keyDiv.addEventListener('click', () => {
                     if (key.toLowerCase() === 'backspace') {
-                        userInput.value = userInput.value.slice(0, -1);
+                        userInput.value = userInput.value.slice(0, -1); // Удаляем последний символ
 
                     } else if (key.toLowerCase() === 'enter') {
                         userInput.value += '\n';
@@ -190,23 +210,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         userInput.value += ' ';
                     }
                     else {
-                        userInput.value += key;
+                        userInput.value += key; // Добавляем символ в поле ввода
                     }
-                    userInput.focus();
-                    userInput.dispatchEvent(new Event('input'));
+                    userInput.focus(); // Возвращаем фокус на поле ввода
+                    userInput.dispatchEvent(new Event('input')); // Вызываем событие 'input' вручную
                 });
             }
             keyboardDiv.appendChild(rowDiv);
         }
     }
-
     function updateKeyboard() {
         const textSpans = textToTypeDiv.querySelectorAll('span');
-        const currentKey = textSpans[currentCharIndex] ? textSpans[currentCharIndex].textContent : null
-        const keyElements = document.querySelectorAll('.key');
-        keyElements.forEach(keyElement => {
-            keyElement.classList.remove('current-key');
-            const keyText = keyElement.dataset.key;
+        const currentKey = textSpans[currentCharIndex] ? textSpans[currentCharIndex].textContent : null //получаем текущий символ
+        const keyElements = document.querySelectorAll('.key'); //получаем все клавиши
+        keyElements.forEach(keyElement => { //проходим по всем клавишам
+            keyElement.classList.remove('current-key'); //убираем подсветку со всех клавиш
+            const keyText = keyElement.dataset.key; // Сравниваем lowercase
 
             if (currentKey && keyText === currentKey.toLowerCase()) {
                 keyElement.classList.add('current-key');
@@ -223,9 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll(`.${selectedMode}`).forEach(group => {
             group.style.display = 'block'; // Или 'flex', если вы используете flexbox
         })
-
     }
-
 
     modeSelect.addEventListener('change', () => {
         updateControlVisibility();
@@ -252,9 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     newTextButton.addEventListener('click', loadText);
 
-    // --- Переключение темы ---
-
-    // Проверяем, есть ли сохраненная тема в localStorage
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
         document.body.classList.add(savedTheme); // Применяем сохраненную тему
