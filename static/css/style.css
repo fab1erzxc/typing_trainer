@@ -68,3 +68,122 @@ h1 {
     color: #4CAF50;
     /* Зеленый цвет для скорости и точности */
 }
+
+/* ... (предыдущие стили) ... */
+
+#keyboard {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.keyboard-row {
+    display: flex;
+}
+
+.key {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ccc;
+    margin: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    /* Запрещаем выделение текста */
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.key.pressed {
+    background-color: #ddd;
+    /* Цвет при нажатии (keydown) */
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+    /* Внутренняя тень */
+}
+
+.key.current-key {
+    background-color: #add8e6;
+    /* Светло-голубой цвет для текущей клавиши */
+
+}
+
+/* Стили для подсветки текста*/
+
+#text-to-type span.correct {
+    color: green;
+}
+
+#text-to-type span.incorrect {
+    color: red;
+}
+
+#text-to-type span.current {
+    background-color: yellow;
+    /* Подсветка текущего символа */
+}
+
+.key[data-key="space"] {
+    /* data-key=" " не работает, поэтому используем [data-key="space"] */
+    width: 200px;
+    /* Ширина пробела */
+}
+
+.key[data-key="enter"] {
+    width: 80px;
+}
+
+.key[data-key="backspace"] {
+    width: 80px;
+}
+
+.key[data-key="tab"] {
+    width: 60px;
+}
+
+.key[data-key="capslock"] {
+    width: 70px;
+}
+
+.key[data-key="shift"] {
+    width: 85px;
+}
+
+.key[data-key="ctrl"] {
+    width: 60px;
+    font-size: 12px;
+}
+
+.key[data-key="alt"] {
+    width: 50px;
+    font-size: 12px;
+}
+
+/* ... (предыдущие стили) ... */
+
+#controls {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    /* Разрешаем перенос на новую строку */
+    justify-content: center;
+    /* Центрируем элементы */
+    align-items: center;
+    /* Выравниваем по центру по вертикали */
+    gap: 10px;
+    /* Добавляем промежутки между элементами */
+}
+
+#controls label {
+    margin-right: 5px;
+}
+
+#controls select,
+#controls input[type="range"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

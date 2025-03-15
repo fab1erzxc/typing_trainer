@@ -11,8 +11,51 @@
 <body>
     <h1>Typing Trainer</h1>
 
+    <div id="controls">
+        <label for="mode">Mode:</label>
+        <select id="mode">
+            <option value="letters">Letters</option>
+            <option value="words" selected>Words</option>
+            <option value="sentences">Sentences</option>
+            <option value="paragraph">Paragraph</option>
+        </select>
+
+        <label for="difficulty">Difficulty:</label>
+        <select id="difficulty">
+            <option value="easy" selected>Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+        </select>
+
+        <div class="control-group letters" style="display: none;">
+            <label for="length">Length (letters):</label>
+            <input type="range" id="length" min="50" max="500" value="100">
+            <span id="length-value">100</span>
+        </div>
+
+        <div class="control-group words sentences" style="display: none;">
+            <label for="num-words">Number of Words:</label>
+            <input type="range" id="num-words" min="5" max="50" value="20">
+            <span id="num-words-value">20</span>
+        </div>
+
+        <div class="control-group paragraph" style="display: none;">
+            <label for="num-sentences">Sentences (paragraph):</label>
+            <input type="range" id="num-sentences" min="1" max="10" value="5">
+            <span id="num-sentences-value">5</span>
+        </div>
+
+        <div class="control-group sentences paragraph" style="display: none;">
+            <label for="num-words-sentence">Words per sentence:</label>
+            <input type="range" id="num-words-sentence" min="1" max="20" value="8">
+            <span id="num-words-sentence-value">8</span>
+        </div>
+
+        <button id="new-text">New Text</button>
+    </div>
+
     <div id="text-to-type">
-        <p>Type this text here...</p> <!-Текст для печати-->
+        <p>Loading text...</p> <!--Изменен текст заглушки-->
     </div>
 
     <textarea id="user-input" placeholder="Start typing..."></textarea>
@@ -22,57 +65,9 @@
         <p>Accuracy: <span id="accuracy">100</span>%</p>
     </div>
 
+    <div id="keyboard"></div>
+
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script>
-        // Функция для отправки статистики на сервер (заглушка)
-        function sendStats(speed, accuracy) {
-            fetch('/api/stats', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ speed: speed, accuracy: accuracy }),
-            })
-                .then(response => response.json())
-                .then(data => console.log('Server response:', data))
-                .catch(error => console.error('Error:', error)); // Добавлена обработка ошибок
-        }
-
-        // Пример вызова функции отправки статистики (замените на реальный код)
-        // sendStats(30, 95); // Раскомментируйте и замените значения, когда будете готовы
-
-        // Добавляем обработчики событий (заглушка)
-        const userInput = document.getElementById('user-input');
-        const textToType = document.getElementById('text-to-type').innerText; //берем текст
-
-        userInput.addEventListener('input', () => {
-            // Здесь будет логика обработки ввода, подсчета скорости и точности
-            // ...
-
-            const currentInput = userInput.value;
-
-            //пример логики
-            if (currentInput === textToType.substring(0, currentInput.length)) {
-                userInput.style.color = 'green'
-            } else {
-                userInput.style.color = 'red'
-            }
-
-            // Пример обновления статистики (замените на реальный код)
-            const speed = currentInput.length * 5 // Пример расчета скорости (слов в минуту)
-            const accuracy = 98; // Пример расчета точности
-
-            document.getElementById('speed').textContent = speed;
-            document.getElementById('accuracy').textContent = accuracy;
-
-            // отправляем реальные данные
-            // sendStats(speed, accuracy)
-        });
-
-        // Дополнительный код JavaScript (обработка клавиатуры, таймер, и т.д.)
-        // ...
-
-    </script>
 </body>
 
 </html>
